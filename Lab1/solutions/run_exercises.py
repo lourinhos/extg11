@@ -64,9 +64,23 @@ for N in [100, 500, 1000]:
         times.append(result[1])
     print(f"    N={N}, q0={q0:.5f}: avg_time={np.mean(times):.1f}")
 
-# =============================================================================
-# EXERCISE 4: Selection in finite populations
-# =============================================================================
+print("\n  Heterozygosity decay (q0=0.5, neutral):")
+for N in [100, 500]:
+    nGen = 500
+    q0 = 0.5
+    H0 = 2 * q0 * (1 - q0)
+    H_expected_final = H0 * (1 - 1/(2*N))**nGen
+
+    for n_sims in [20, 100, 200]:
+        H_all = np.zeros(nGen)
+        for _ in range(n_sims):
+            q_t = WFSim(q0=q0, w_1=1, w_2=1, w_3=1, u=0, nGen=nGen, N=N)[0]
+            H_all += 2 * q_t * (1 - q_t)
+        H_mean_final = H_all[-1] / n_sims
+        err = abs(H_mean_final - H_expected_final)
+        print(f"    N={N}, {n_sims:>3} reps: sim H_final={H_mean_final:.4f}, analytic={H_expected_final:.4f}, diff={err:.4f}")
+
+
 print("\n=== EXERCISE 4 ===")
 
 # 4a. Initial test: q0=0.02, w2=1.01, w3=1.02, 1000 sims
